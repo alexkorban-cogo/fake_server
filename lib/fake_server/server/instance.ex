@@ -94,8 +94,10 @@ defmodule FakeServer.Instance do
     with {:ok, route} <- FakeServer.Route.create(path: path, response: response),
          routes <- [route | server.routes],
          {:ok, router} <- FakeServer.Router.create(routes, server.access) do
-      :cowboy.set_env(server.server_name, :dispatch, router)
-      {:ok, %__MODULE__{server | routes: routes, router: router}}
+      FakeServer.Cowboy.stop(server)
+      updated_server = %__MODULE__{server | routes: routes, router: router}
+      FakeServer.Cowboy.start_listen(updated_server)
+      {:ok, updated_server}
     else
       error -> error
     end
