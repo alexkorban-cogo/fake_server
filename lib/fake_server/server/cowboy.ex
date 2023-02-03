@@ -7,7 +7,7 @@ defmodule FakeServer.Cowboy do
     :cowboy.start_clear(
       server.server_name,
       [port: server.port],
-      %{env: %{dispatch: server.router}}
+      %{env: %{dispatch: server.router}, max_keepalive: 1}
     )
   end
 
